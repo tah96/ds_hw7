@@ -3,24 +3,58 @@ library(shinyalert)
 library(tidyverse)
 
 source("helpers.R")
+setwd("C:/Users/tyler/OneDrive/School Materials/ST 558/Week 9/HW7/ds_hw7")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
   sidebarLayout(
-    "Add a title panel here!",
+    "Correlation Exploration",
     sidebarPanel(
       h2("Select Variables to Find Correlation:"),
-      "put your selectize inputs here!",
-      "Give them internal IDs of corr_x and corr_y.",
-      "Note the vector with these names comes from the helpers.R files. The object is called `numeric_vars`",
-      "Palce your radio buttons here! One radio button for each variable we may subset on. Set the internal IDs for these to be hhl_corr, fs_corr, and schl_corr.",
+      selectInput(
+        "corr_x",
+        "x Variable",
+        choices = names(numeric_vars),
+        selected = "Total person's income"
+      ),
+      selectInput(
+        "corr_y",
+        "y Variable",
+        choices = names(numeric_vars),
+        selected = "Travel time to work"
+      ),
+      h2("Choose a subset of data"),
+      radioButtons(
+        "hhl_corr",
+        "Household Language",
+        choices = c("All","English Only","Spanish", "Other"),
+        selected = "All"
+      ),
+      radioButtons(
+        "fs_corr",
+        "SNAP Recipient",
+        choices = c("All","Yes","No"),
+        selected = "All"
+      ),
+      radioButtons(
+        "schl_corr",
+        "Educational attainment",
+        choices = c("All","High School not Completed","High School or GED","College Degree"),
+        selected = 1
+      ),
       h2("Select a Sample Size"),
-      "Put your slider for sample size here. Give this an ID of corr_n.",
+      sliderInput(
+        "corr_n",
+        "",
+        min = 20,
+        max = 500,
+        value = 20
+      ),
       actionButton("corr_sample","Get a Sample!")
     ),
     mainPanel(
-      "Add a plotOutput here for the scatter plot",
+      plotOutput(outputId = output$scatter),
       conditionalPanel("input.corr_sample",
                        h2("Guess the correlation!"),
                        column(6, 
@@ -38,7 +72,7 @@ ui <- fluidPage(
   )
 )
 
-my_sample <- readRDS("my_sample_temp.rds")
+my_sample <- readRDS("data/my_sample_temp.rds")
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
