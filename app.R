@@ -80,11 +80,9 @@ server <- function(input, output, session) {
     
     #################################################3
     ##Correlation tab
-    #Create a reactiveValues() object called sample_corr
-    #this object should hve two elements, corr_data and corr_truth
-    #both should be set to null to start with!
+  
+    sample_corr <- reactiveValues(corr_data=NULL,corr_truth=NULL)
 
-    #update input boxes so they can't choose the same variable
     observeEvent(c(input$corr_x, input$corr_y), {
       corr_x <- input$corr_x
       corr_y <- input$corr_y
@@ -93,36 +91,39 @@ server <- function(input, output, session) {
         choices <- choices[-which(choices == corr_x)]
         updateSelectizeInput(session,
                              "corr_y",
-                             choices = choices)#we'll cover this kind of thing shortly!
+                             choices = choices)
       }
     })
     
     #Use an observeEvent() to look for the action button (corr_sample)
     #Modify the code below (this will need to go in the observeEvent) to
     #subset the data appropriately
-      if(input$hhl_corr == "all"){
+    
+    observeEvent(input$corr_sample) {
+      ## May need to double bracket to remove values...but we'll see
+      if(input$hhl_corr == "All"){
         hhl_sub <- HHLvals
-      } else if(input$hhl_corr == "english"){
+      } else if(input$hhl_corr == "English Only"){
         hhl_sub <- HHLvals["1"]
-      } else if(input$hhl_corr == "spanish"){
+      } else if(input$hhl_corr == "Spanish"){
         hhl_sub <- HHLvals["2"]
       } else {
         hhl_sub <- HHLvals[c("0", "3", "4", "5")]
       }
       
-      if(input$fs_corr == "all"){
+      if(input$fs_corr == "All"){
         fs_sub <- FSvals
-      } else if(input$fs_corr == "yes"){
+      } else if(input$fs_corr == "Yes"){
         fs_sub <- FSvals["1"]
       } else {
         fs_sub <- FSvals["2"]
       }
       
-      if(input$schl_corr == "all"){
+      if(input$schl_corr == "All"){
         schl_sub <- SCHLvals
-      } else if(input$schl_corr == "no_hs"){
+      } else if(input$schl_corr == "High School not Completed"){
         schl_sub <- SCHLvals[as.character(0:15)]
-      } else if(input$schl_corr == "hs"){
+      } else if(input$schl_corr == "High School or GED"){
         schl_sub <- SCHLvals[as.character(16:19)]
       } else {
         schl_sub <- SCHLvals[as.character(20:24)]
@@ -131,7 +132,7 @@ server <- function(input, output, session) {
       corr_vars <- c(input$corr_x, input$corr_y)
       
       subsetted_data <- my_sample |>
-        filter(#cat vars first
+        filter(#The below should be working
           HHLfac %in% hhl_sub,
           FSfac %in% fs_sub,
           SCHLfac %in% schl_sub
@@ -155,7 +156,7 @@ server <- function(input, output, session) {
       #the corr_truth argument should be updated to be the correlation between 
       #the two variables selected: 
       #cor(sample_corr$corr_data |> select(corr_vars))[1,2]
-
+    }
     
     #Create a renderPlot() object to output a scatter plot
     #Use the code below to validate that data exists,
