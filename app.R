@@ -3,7 +3,6 @@ library(shinyalert)
 library(tidyverse)
 
 source("helpers.R")
-setwd("C:/Users/tyler/OneDrive/School Materials/ST 558/Week 9/HW7/ds_hw7")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -71,7 +70,7 @@ ui <- fluidPage(
   )
 )
 
-my_sample <- readRDS("data/my_sample_temp.rds")
+my_sample <- readRDS("my_sample_temp.rds")
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
